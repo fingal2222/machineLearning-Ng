@@ -5,8 +5,12 @@ Created on Sat Nov  3 18:44:41 2018
 @author: zhaof
 """
 
+"""
+python 里的index是从0开始的，而label中是用10来表示0的，注意注意
+"""
 
-##-----有问题待检查！！！！！----------
+
+
 from scipy.io import loadmat
 import numpy as np
 import matplotlib.pyplot as plt
@@ -62,9 +66,12 @@ def oneVsAll(X, y, num_labels, lamb):
     X=np.hstack((np.ones([m,1]),X))
     inital_theta=np.zeros([n+1,1])
     for c in range(num_labels):
+        lab=c
 #        J=lrCostFunction(inital_theta,X,(y==c)+0,lamb) 
-#        grad=gradient(inital_theta,X,(y==c)+0,lamb) 
-        all_theta[c,:] = opt.fmin_cg(lrCostFunction, x0=np.ravel(inital_theta),fprime=gradient, args=(X, (y==c)+0,lamb))
+        if c==0:
+            lab=10            
+#        grad=gradient(inital_theta,X,(y==c)+0,lamb)         
+        all_theta[c,:] = opt.fmin_cg(lrCostFunction, x0=np.ravel(inital_theta),fprime=gradient, args=(X, (y==lab)+0,lamb))
     return all_theta
 
 
@@ -83,7 +90,8 @@ if __name__=='__main__':
     res2=predictOneVsAll(X,result)
     
     arr=pd.DataFrame(res2)
-    arr["max_index"]=np.argmax(res2,axis=1)+1
+    arr["max_index"]=np.argmax(res2,axis=1)
+    arr["max_index"]= arr["max_index"].map(lambda x: x if x!=0 else 10)
     arr["y"]=data["y"]
     eq=(arr["y"]==arr["max_index"])+0    
     prob=np.mean(eq)
