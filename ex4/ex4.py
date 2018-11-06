@@ -28,7 +28,7 @@ def onehot(y,num_labels):
         out[i,val-1]=1
     return out
 
-def nnCostFunction(X,y,num_labels,Theta1,Theta2):
+def nnCostFunction(X,y,num_labels,Theta1,Theta2,lam):
 #    将y转成one-hot
     J=0
     y_temp=np.zeros([np.size(y),num_labels])
@@ -42,8 +42,9 @@ def nnCostFunction(X,y,num_labels,Theta1,Theta2):
     for i in range(num_labels):
         yi=y_temp[:,i].reshape((1,m))
         hi=h[:,i].reshape((m,1))
-        J=J+np.sum(np.dot(-yi,np.log(hi))-np.dot((1-yi),np.log(1-hi)))    
-    return J/m
+        J=J+np.sum(np.dot(-yi,np.log(hi))-np.dot((1-yi),np.log(1-hi)))
+        
+    return J/m+lam*(np.sum(Theta1[:,1:]*Theta1[:,1:])+np.sum(Theta2[:,1:]*Theta2[:,1:]))/(2*m)
     
     
 
@@ -61,7 +62,7 @@ if __name__=='__main__':
     
 #    Theta1=np.zeros([25,401])
 #    Theta2=np.zeros([10,26])
-    res=nnCostFunction(X,y,10,Theta1,Theta2)
+    res=nnCostFunction(X,y,10,Theta1,Theta2,1)
     
     
     
