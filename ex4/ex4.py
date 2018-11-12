@@ -42,7 +42,7 @@ def predict(Theta1,Theta2,X):
 
 def nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,X,y,lam):
 #    将y转成one-hot    
-    Theta1=np.reshape(nn_params[0:hidden_layer_size*(input_layer_size+1)],(hidden_layer_size,(input_layer_size+1)))
+    Theta1=np.reshape(nn_params[0:hidden_layer_size*(input_layer_size+1)],(hidden_layer_size,input_layer_size+1))
     Theta2=np.reshape(nn_params[hidden_layer_size*(input_layer_size+1):],(num_labels,hidden_layer_size+1))
     m=np.size(X,0)
     J=0
@@ -56,7 +56,7 @@ def nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,X,y,l
     a2=sigmoid(z2)
     a2_temp=np.hstack((np.ones([np.size(a2,0),1]),a2))
     z3=np.dot(a2_temp,Theta2.T)
-    h=sigmoid(z3)
+    a3=sigmoid(z3)
     
     # 先把theta(1)拿掉，不参与正则化
     temp1=np.hstack((np.zeros([np.size(Theta1,0),1]),Theta1[:,1:]))
@@ -67,7 +67,7 @@ def nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,X,y,l
     
 #    J=np.sum(np.dot(-y.T,np.log(h))-np.dot((1-y).T,np.log(1-h)))/m+lam*np.dot(theta1.T,theta1)/(2*m)
         
-    cost=y_temp*np.log(h)+(1-y_temp)*np.log((1-h))
+    cost=y_temp*np.log(a3)+(1-y_temp)*np.log((1-a3))
     
     J=-1/m*np.sum(cost)+lam/(2*m)*(temp1+temp2)
     
@@ -86,7 +86,7 @@ def nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,X,y,l
         #step2
         err_3=np.zeros([num_labels,1])
         for k in range(num_labels):
-            err_3[k]=a_3[k]-(y[t]==k)
+            err_3[k]=a_3[k]-(y[t]==k+1)+0
         #step3
         err_2=np.dot(Theta2.T,err_3)
         err_2=np.multiply(err_2[1:],sigmoidGradient(z_2))
@@ -115,8 +115,9 @@ def nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,X,y,l
 
 
 def randInitializeWeights(L_out,L_in):
-    epsilon_init=np.sqrt(6)/np.sqrt(L_in+L_out)
-    W=random.random(size=(L_out,L_in+1))*2*epsilon_init-epsilon_init
+#    epsilon_init=np.sqrt(6)/np.sqrt(L_in+L_out)
+#    W=random.random(size=(L_out,L_in+1))*2*epsilon_init-epsilon_init
+    W=np.sin(range(1,L_out*(L_in+1)+1)).reshape((L_in+1,L_out)).T/10
     return W
 
 def backPropagation(X,y,num_labels,Theta1,Theta2):
@@ -190,39 +191,39 @@ def checkNNGradients(lam):
 
 if __name__=='__main__':
     
-#    input_layer_size=400
-#    hidden_layer_size=25
-#    num_labels=10
-#    
-#    
-#    filePathData="D:\BaiduNetdiskDownload\mlclass-ex4-jin\ex4data1.mat"
-#    data=loadData(filePathData)
-#    X=data["X"]
-#    y=data["y"]
-#    m=np.size(X,0)
-#    fileTheta="D:\BaiduNetdiskDownload\mlclass-ex3-jin\ex3weights.mat"
-#    Theta=loadData(fileTheta)
-#    
-#    Theta1=Theta["Theta1"]
-#    Theta2=Theta["Theta2"]
-#    
-#    nn_params=transformVector(Theta1,Theta2) 
-#    lam=0
-#    
-#    J = nnCostFunction(nn_params, input_layer_size, hidden_layer_size,num_labels, X, y, lam)
-#    
-##    print("J %f"%J)
-#    
-#    g=sigmoidGradient(np.array([1, -0.5,0, 0.5, 1]))
-##    print("sigmoid is %f"%(g))
-#    
-##    Theta1=np.zeros([25,401])
-##    Theta2=np.zeros([10,26])
-##    res=nnCostFunction(X,y,10,Theta1,Theta2,1)
-#    initial_Theta1=randInitializeWeights(hidden_layer_size,input_layer_size)
-#    initial_Theta2=randInitializeWeights(num_labels,hidden_layer_size)
-#    
-#    initial_nn_params=transformVector(initial_Theta1,initial_Theta2) 
+    input_layer_size=400
+    hidden_layer_size=25
+    num_labels=10
+    
+    
+    filePathData="D:\BaiduNetdiskDownload\mlclass-ex4-jin\ex4data1.mat"
+    data=loadData(filePathData)
+    X=data["X"]
+    y=data["y"]
+    m=np.size(X,0)
+    fileTheta="D:\BaiduNetdiskDownload\mlclass-ex3-jin\ex3weights.mat"
+    Theta=loadData(fileTheta)
+    
+    Theta1=Theta["Theta1"]
+    Theta2=Theta["Theta2"]
+    
+    nn_params=transformVector(Theta1,Theta2) 
+    lam=0
+    
+    J = nnCostFunction(nn_params, input_layer_size, hidden_layer_size,num_labels, X, y, lam)
+    
+#    print("J %f"%J)
+    
+    g=sigmoidGradient(np.array([1, -0.5,0, 0.5, 1]))
+#    print("sigmoid is %f"%(g))
+    
+#    Theta1=np.zeros([25,401])
+#    Theta2=np.zeros([10,26])
+#    res=nnCostFunction(X,y,10,Theta1,Theta2,1)
+    initial_Theta1=randInitializeWeights(hidden_layer_size,input_layer_size)
+    initial_Theta2=randInitializeWeights(num_labels,hidden_layer_size)
+    
+    initial_nn_params=transformVector(initial_Theta1,initial_Theta2) 
     lam=0
     checkNNGradients(lam)
     
