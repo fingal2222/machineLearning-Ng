@@ -56,7 +56,7 @@ def ex8_cofi(Y,R):
             print("\n")
 
     #Learning Movie Ratings
-    dt=loadmat("Users/zhaofengjun/Documents/python/machineLearning-Ng/ex8/ex8_movies.mat")
+    dt=loadmat("/Users/zhaofengjun/Documents/python/machineLearning-Ng/ex8/ex8_movies.mat")
     Y=np.c_[my_rating,dt["Y"]]
     R=np.c_[(my_rating!=0)+0,dt["R"]]
     Ymean,Ynorm=normalizeRatings(Y,R)
@@ -65,8 +65,8 @@ def ex8_cofi(Y,R):
     num_features=10
     X=np.random.randint(0,5,size=(num_movies,num_features))
     Theta=np.random.rand(num_users,num_features)
-    initial_nn_params=np.r_[X.ravel(),Theta.ravel()]
-    costFunc=cofiCostFunc(Y,R,num_users,num_movies,num_features,0)
+    initial_nn_params=np.array(np.r_[X.ravel(),Theta.ravel()])
+    costFunc=costFunction(Y,R,num_users,num_movies,num_features,0)
     [params, cost] = opt.fmin_cg(costFunc, x0=initial_nn_params)
     X = np.reshape(params[0:num_movies * num_features], (num_movies, num_features))
     Theta = np.reshape(params[num_features * num_movies:], (num_users, num_features))
@@ -74,6 +74,19 @@ def ex8_cofi(Y,R):
     #Recommendation for you
     predictions=np.dot(X,Theta.T)
     my_pred=predictions[:,0]+Ymean
+    indx= np.argsort(my_pred)
+    lastIndex=len(indx)-1
+    for i in range(10):
+        print("movieName:",movieList[lastIndex-i])
+        print("rating is:",my_pred[lastIndex-i,0])
+        print("\n")
+
+    for i in range(n):
+        if(my_rating[i,:]>0):
+            print(my_rating[i,:],movieList[i])
+            print("\n")
+
+
 
 
 
@@ -121,7 +134,7 @@ def cofiCostFunc(params,Y,R,num_users,num_movies,num_features,lam):
     X_grad=np.dot(((np.dot(X,Theta.T)-Y)*R),Theta)+lam*X
     Theta_grad=np.dot(((np.dot(X,Theta.T)-Y)*R).T,X)+lam*Theta
     grad=np.r_[X_grad.ravel(),Theta_grad.ravel()]
-    return J,grad
+    return J,np.array(grad)
 
 if __name__=='__main__':
     data=loadData("/Users/zhaofengjun/Documents/python/machineLearning-Ng/ex8/ex8_movies.mat")
