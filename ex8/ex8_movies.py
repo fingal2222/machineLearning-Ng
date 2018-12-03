@@ -12,7 +12,7 @@ def ex8_cofi(Y,R):
     print(np.mean(Y[0,R[0,:]]))
 
 # Collaborative Filtering
-    data2=loadmat("/Users/zhaofengjun/Documents/python/machineLearning-Ng/ex8/ex8_movieParams.mat")
+    data2=loadmat("D:\BaiduNetdiskDownload\homework\machineLearning-Ng\ex8\ex8_movieParams.mat")
 #     reduce the data set size so that this
     X=data2["X"]
     Theta=data2["Theta"]
@@ -24,7 +24,7 @@ def ex8_cofi(Y,R):
     Y=Y[0:num_movies,0:num_users]
     R=R[0:num_movies,0:num_users]
     params=np.r_[np.ravel(X),np.ravel(Theta)]
-    J,grad=cofiCostFunc(params,Y,R,num_users,num_movies,num_features,0)
+    J=cofiCostFunc(params,Y,R,num_users,num_movies,num_features,0)
     print("cost at loaded parameters: ")
     print(J)
 
@@ -32,9 +32,10 @@ def ex8_cofi(Y,R):
 
 #     Collaborative Filtering Cost Regularization
     params=np.r_[np.ravel(X),np.ravel(Theta)]
-    J,grad = cofiCostFunc(params, Y, R, num_users, num_movies, num_features, 1.5)
-    print("J at lam=1.5 is:  ")
-    print(J)
+    J = cofiCostFunc(params, Y, R, num_users, num_movies, num_features, 1.5)
+    grad = cofiCostGradientFunc(params, Y, R, num_users, num_movies, num_features, 1.5)
+    print("J at lam=1.5 is:  ",J,"grad at lam=1.5 is:",grad)
+  
 
     n=1682
     movieList=loadMovieList()
@@ -56,7 +57,7 @@ def ex8_cofi(Y,R):
             print("\n")
 
     #Learning Movie Ratings
-    dt=loadmat("/Users/zhaofengjun/Documents/python/machineLearning-Ng/ex8/ex8_movies.mat")
+    dt=loadmat("D:\BaiduNetdiskDownload\homework\machineLearning-Ng\ex8\ex8_movies.mat")
     Y=np.c_[my_rating,dt["Y"]]
     R=np.c_[(my_rating!=0)+0,dt["R"]]
     Ymean,Ynorm=normalizeRatings(Y,R)
@@ -66,19 +67,22 @@ def ex8_cofi(Y,R):
     X=np.random.randint(0,5,size=(num_movies,num_features))
     Theta=np.random.rand(num_users,num_features)
     initial_nn_params=np.array(np.r_[X.ravel(),Theta.ravel()])
-    costFunc=costFunction(Y,R,num_users,num_movies,num_features,0)
-    [params, cost] = opt.fmin_cg(costFunc, x0=initial_nn_params)
+#    costFunc=costFunction(Y,R,num_users,num_movies,num_features,0)
+    params = opt.fmin_cg(cofiCostFunc, x0=initial_nn_params,fprime=cofiCostGradientFunc,args=(Y,R,num_users,num_movies,num_features,10),maxiter=100)
+    
     X = np.reshape(params[0:num_movies * num_features], (num_movies, num_features))
     Theta = np.reshape(params[num_features * num_movies:], (num_users, num_features))
 
+
+
     #Recommendation for you
     predictions=np.dot(X,Theta.T)
-    my_pred=predictions[:,0]+Ymean
+    my_pred=predictions[:,0]+Ymean[:,0]
     indx= np.argsort(my_pred)
     lastIndex=len(indx)-1
     for i in range(10):
-        print("movieName:",movieList[lastIndex-i])
-        print("rating is:",my_pred[lastIndex-i,0])
+        print("movieName:",movieList[indx[lastIndex-i]])
+        print("rating is:",my_pred[indx[lastIndex-i]])
         print("\n")
 
     for i in range(n):
@@ -107,12 +111,9 @@ def normalizeRatings(Y,R):
 
 
 
-
-
-
 def loadMovieList():
     movieList = []
-    filename = "/Users/zhaofengjun/Documents/python/machineLearning-Ng/ex8/movie_ids.txt"
+    filename = "D:\BaiduNetdiskDownload\homework\machineLearning-Ng\ex8\movie_ids.txt"
     for data in open(filename):
         movieList.append(data[data.find(" ") + 1:])
 
@@ -120,9 +121,7 @@ def loadMovieList():
 
 
     #checkGradient(1.5)
-
-
-def cofiCostFunc(params,Y,R,num_users,num_movies,num_features,lam):
+def cofiCostGradientFunc(params,Y,R,num_users,num_movies,num_features,lam):
 
     J=0
     X=np.reshape(params[0:num_movies*num_features],(num_movies,num_features))
@@ -134,10 +133,18 @@ def cofiCostFunc(params,Y,R,num_users,num_movies,num_features,lam):
     X_grad=np.dot(((np.dot(X,Theta.T)-Y)*R),Theta)+lam*X
     Theta_grad=np.dot(((np.dot(X,Theta.T)-Y)*R).T,X)+lam*Theta
     grad=np.r_[X_grad.ravel(),Theta_grad.ravel()]
-    return J,np.array(grad)
+    return grad
+
+def cofiCostFunc(params,Y,R,num_users,num_movies,num_features,lam):
+    J=0
+    X=np.reshape(params[0:num_movies*num_features],(num_movies,num_features))
+    Theta=np.reshape(params[num_features*num_movies:],(num_users,num_features))
+    J_temp=(np.dot(X,Theta.T)-Y)**2
+    J=np.sum(J_temp[R==1])/2+lam/2*(np.sum(Theta**2)+np.sum(X**2)) 
+    return J
 
 if __name__=='__main__':
-    data=loadData("/Users/zhaofengjun/Documents/python/machineLearning-Ng/ex8/ex8_movies.mat")
+    data=loadData("D:\BaiduNetdiskDownload\homework\machineLearning-Ng\ex8\ex8_movies.mat")
     Y=data["Y"]
     R=data["R"]
     ex8_cofi(Y,R)
