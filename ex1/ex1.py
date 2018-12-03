@@ -7,11 +7,30 @@ Created on Thu Oct 11 14:40:01 2018
 
 import numpy as np
 import matplotlib.pyplot as plt
-import computeCost
-import gradientDescent
 from mpl_toolkits.mplot3d import Axes3D 
 
-b=np.loadtxt("ex1data1.txt",delimiter=",")
+
+def computeCost(X, y, theta):
+    m=len(y)
+    y_shape=np.shape(y)
+    J=np.sum((np.dot(X,theta).reshape(y_shape)-y)**2)/(2*m)
+    return J
+
+def gradientDescent(X,y,theta,alpha,num_iters):
+    m=len(y)
+    J_history=np.zeros([num_iters,1])
+    theta_s=theta
+    y_shape=np.shape(y)
+    for iter in range(num_iters):
+        theta[0]=theta[0]-alpha/m*np.sum(np.dot(X,theta_s).reshape(y_shape)-y)        
+        theta[1]=theta[1]-alpha/m*np.sum(np.multiply(np.dot(X,theta_s).reshape(y_shape)-y,X[:,1].reshape(y_shape)))
+        theta_s=theta
+        J_history[iter]=computeCost(X,y,theta)
+        
+    return theta,J_history
+    
+
+b=np.loadtxt("D:\BaiduNetdiskDownload\homework\machineLearning-Ng\ex1\ex1data1.txt",delimiter=",")
 X=b[:,0]
 y=b[:,1]
 m=len(y) # number of training examples
@@ -33,9 +52,9 @@ iterations=1500;
 alpha=0.01;
 
 ###compute and display initial cost
-J=computeCost.computeCost(X, y, theta)
+J=computeCost(X, y, theta)
 
-[theta,J] = gradientDescent.gradientDescent(X, y, theta, alpha, iterations)
+[theta,J] = gradientDescent(X, y, theta, alpha, iterations)
 
 print('Theta found by gradient descent: ');
 print('%f %f \n', theta[0], theta[1]);
@@ -57,7 +76,7 @@ J_vals = np.zeros([len(theta0_vals), len(theta1_vals)])
 for i in range(len(theta0_vals)):
     for j in range(len(theta1_vals)):
         t=np.array([[theta0_vals[i]],[theta1_vals[j]]])
-        J_vals[i,j]=computeCost.computeCost(X,y,t)
+        J_vals[i,j]=computeCost(X,y,t)
 
 
 J_vals=J_vals.T
