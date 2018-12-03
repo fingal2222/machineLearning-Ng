@@ -10,7 +10,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import scipy.optimize as opt 
-import sigmoid as sg
+
+
+def sigmoid(z):
+    gz=np.zeros(np.shape(z))
+    gz=1/(1+np.exp(-z))
+    return gz
 
 def readData(filepath):
     return pd.read_csv(filepath,sep=',',header=None)
@@ -42,7 +47,7 @@ def costFunctionReg(theta,X,y,lam):
     z=np.dot(X,theta)
     zero=np.zeros([1,1])
     theta1=np.vstack((zero,theta[1:,:]))
-    h=sg.sigmoid(z) 
+    h=sigmoid(z)
     J=np.sum(np.dot(-y.T,np.log(h))-np.dot((1-y).T,np.log(1-h)))/m+lam*np.dot(theta1.T,theta1)/(2*m)
     grad=np.dot(X.T,(h-y))/m+lam*theta/m
     return J,grad
@@ -71,7 +76,7 @@ def plotDecisionBoundary(theta,X,y,data):
         plt.show()
 
 if __name__=='__main__':
-    filepath =('D:/BaiduNetdiskDownload/ex2-logistic regression/ex2data2.txt')
+    filepath =('ex2data2.txt')
     data =readData(filepath)
 #    plotData(data)
     X=data.values[:,0:2]
