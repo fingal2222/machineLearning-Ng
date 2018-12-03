@@ -9,7 +9,6 @@ Created on Mon Oct 15 11:07:10 2018
 
 import numpy as np
 import matplotlib.pyplot as plt
-import gradientDescentMulti
 from mpl_toolkits.mplot3d import Axes3D 
 
 def computeCost(X, y, theta):
@@ -41,39 +40,41 @@ def normalEqn(X, y):
     theta=np.dot(np.dot(np.linalg.pinv(np.dot(X.T,X)),X.T),y)
     return theta
 
-data=np.loadtxt("ex1data2.txt",delimiter=",")
-X=data[:,0:2]
-y=data[:,2]
-m=len(y) # number of training examples
-print("First 10 examples from the dataset: \n")
-#print("x = [%.0f %.0f], y = %.0f \n", %(X[0:9,:], y[0:9,:]))
-print('Program paused. Press enter to continue.\n')
-# Scale features and set them to zero mean
-print('Normalizing Features ...\n')
+if __name__=='__main__':
 
-[X,mu,sigma] =featureNormalize(X) 
-X=np.hstack((np.ones([m,1]),X))
+    data=np.loadtxt("ex1data2.txt",delimiter=",")
+    X=data[:,0:2]
+    y=data[:,2]
+    m=len(y) # number of training examples
+    print("First 10 examples from the dataset: \n")
+    #print("x = [%.0f %.0f], y = %.0f \n", %(X[0:9,:], y[0:9,:]))
+    print('Program paused. Press enter to continue.\n')
+    # Scale features and set them to zero mean
+    print('Normalizing Features ...\n')
 
-alpha=0.01
-num_iters=8500
+    [X,mu,sigma] =featureNormalize(X)
+    X=np.hstack((np.ones([m,1]),X))
 
-theta=np.zeros([3,1])
+    alpha=0.01
+    num_iters=8500
 
-theta,J_history = gradientDescentMulti(X, y, theta, alpha, num_iters)
+    theta=np.zeros([3,1])
 
-plt.plot(np.linspace(1,50,50), J_history[0:50])
-plt.xlabel('Number of iterations');
-plt.ylabel('Cost J');
+    theta,J_history = gradientDescentMulti(X, y, theta, alpha, num_iters)
 
-#Estimate the price of a 1650 sq-ft, 3 br house
-price=np.dot(np.hstack(([1],(np.array([1650, 3])-mu)/sigma)),theta)
-print("Estimate the price of a 1650 sq-ft, 3 br house")
-print(price)
+    plt.plot(np.linspace(1,50,50), J_history[0:50])
+    plt.xlabel('Number of iterations');
+    plt.ylabel('Cost J');
 
-data2=np.loadtxt("ex1data2.txt",delimiter=",")
-X=data2[:,0:2]
-y=data2[:,2]
-m=len(y)
-X=np.hstack((np.ones([m,1]),X))
-theta=normalEqn(X,y)
-price =np.dot(np.array([1,1650,3]),theta)
+    #Estimate the price of a 1650 sq-ft, 3 br house
+    price=np.dot(np.hstack(([1],(np.array([1650, 3])-mu)/sigma)),theta)
+    print("Estimate the price of a 1650 sq-ft, 3 br house")
+    print(price)
+
+    data2=np.loadtxt("ex1data2.txt",delimiter=",")
+    X=data2[:,0:2]
+    y=data2[:,2]
+    m=len(y)
+    X=np.hstack((np.ones([m,1]),X))
+    theta=normalEqn(X,y)
+    price =np.dot(np.array([1,1650,3]),theta)
