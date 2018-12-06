@@ -67,30 +67,30 @@ def dataset3Params(X, y, Xval, yval):
         
 
 if __name__=='__main__':
-#    filePath='ex6data1.mat'
-#    data=loadData(filePath)   
-#    
-#    X=data['X']
-#    y=data['y']  
-#    plotData(X,y)
-#    
-#    clf = svm.LinearSVC(C=100,random_state=0)
-#    clf.fit(X, y.ravel())
-#    clf.score(X, y)
-#    #y_pred= clf.predict(X) #预测
-#    ##根据训练出的模型绘制样本点
-#    plot_decision_boundary(lambda x: clf.predict(x))
-#    
-#    
-#    filePath='ex6data2.mat'
-#    data=loadData(filePath)   
-#    
-#    X=data['X']
-#    y=data['y']  
-#    plotData(X,y)
-#    clf = svm.SVC(C=1, kernel='rbf', gamma=20, decision_function_shape='ovr')
-#    clf.fit(X, y.ravel())
-#    plot_decision_boundary(lambda x: clf.predict(x))
+    filePath='ex6data1.mat'
+    data=loadData(filePath)   
+    
+    X=data['X']
+    y=data['y']  
+    plotData(X,y)
+    
+    clf = svm.LinearSVC(C=1,random_state=0)
+    clf.fit(X, y.ravel())
+    clf.score(X, y)
+    #y_pred= clf.predict(X) #预测
+    ##根据训练出的模型绘制样本点
+    plot_decision_boundary(lambda x: clf.predict(x))
+    
+    
+    filePath='ex6data2.mat'
+    data=loadData(filePath)   
+    
+    X=data['X']
+    y=data['y']  
+    plotData(X,y)
+    clf = svm.SVC(C=1, kernel='rbf', gamma=20, decision_function_shape='ovr')
+    clf.fit(X, y.ravel())
+    plot_decision_boundary(lambda x: clf.predict(x))
     
     
     filePath='ex6data3.mat'

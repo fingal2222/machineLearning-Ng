@@ -63,7 +63,7 @@ def processEmail(email_contents):
             str1,numbers=rereobj.subn('',li[l])
             try:
                 porter_stemmer = PorterStemmer()
-                porter_stemmer.stem(str1)
+                str1=porter_stemmer.stem(str1)
             except:
                 str1=''
                 continue
@@ -100,24 +100,27 @@ if __name__=='__main__':
     clf = svm.LinearSVC(C=0.1,random_state=0)
     clf.fit(X, y.ravel())
     clf.score(X, y)
-    p=clf.predict(X)
-    nsize=len(p)
-    pp=np.mean(p.reshape((nsize,1))==y)
-    
+    p=clf.predict(X)    
+    nsize=len(p)   
+    train_accuracy=np.mean(p.reshape((nsize,1))==y)
+    print("training accuracy is about:",train_accuracy)
+     
     p=clf.predict(Xtest)
     nsize=len(p)
-    pp=np.mean(p.reshape((nsize,1))==ytest)        
-    
+    test_accuracy=np.mean(p.reshape((nsize,1))==ytest)  
+      
+    print("test accuracy is about:",test_accuracy)
     #Top Predictors of Spam
     
     #Try Your Own Emails
-    myEmail=open("D:\BaiduNetdiskDownload\homework\machineLearning-Ng\ex6\emailSample2.txt").read()
+    filename="D:\BaiduNetdiskDownload\homework\machineLearning-Ng\ex6\spamSample2.txt"
+    myEmail=open(filename).read()
     word_indices=processEmail(myEmail)
     word_feature=emailFeatures(word_indices,1899)
     
     p=clf.predict(word_feature.T)
-    nsize=len(p)
-    pp=np.mean(p.reshape((nsize,1))==y)
+    print('Spam Classification: ', p[0])
+    print('\n(1 indicates spam, 0 indicates not spam)\n\n')
     
     
     

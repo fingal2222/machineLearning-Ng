@@ -300,17 +300,17 @@ if __name__=='__main__':
     plt.xlabel('lambda')
     plt.ylabel('Error')
     plt.show()
-    
-    
-#=========== Part 9: Computing test set error and Plotting learning curves with randomly selected examples=============
-#
-#% Map X_poly_test and normalize (using mu and sigma)
-    
+    #% Map X_poly_test and normalize (using mu and sigma)
     theta=trainLinearReg(X_poly,y,3)
     error_val=lineRegCostFunction(theta,X_poly_val,yval,0)    
     error_test=lineRegCostFunction(theta,X_poly_test,ytest,0)
     print("error_val is:",error_val)
     print("error_test is:",error_test)
+    
+    
+
+    
+
     
     
     
