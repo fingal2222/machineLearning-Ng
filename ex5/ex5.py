@@ -28,6 +28,7 @@ def lineRegCostFunction(theta,X,y,lam):
         theta1 = np.vstack((zero, theta[1:, :]))
     J = np.sum((z-y)**2) / (2*m) + lam * np.dot(theta1.T, theta1) / (
                 2 * m)
+    
     return J
 
 def gradient(theta,X,y,lam):
@@ -53,8 +54,8 @@ def learningCurve(X,y,Xval,yval,lamb):
     J_val=np.zeros((m,1))
 
     for i in range(m):
-        X_temp=X[0:i,:]
-        y_temp=y[0:i,:]
+        X_temp=X[0:i+1,:]
+        y_temp=y[0:i+1,:]
         all_theta=trainLinearReg(X_temp,y_temp,lamb)
         J_train[i,:]= lineRegCostFunction(all_theta,X_temp,y_temp,0)
         J_val[i, :] = lineRegCostFunction(all_theta, Xval, yval, 0)
@@ -165,16 +166,16 @@ if __name__=='__main__':
 #%  Write Up Note: Since the model is underfitting the data, we expect to
 #%                 see a graph with "high bias" -- slide 8 in ML-advice.pdf 
 #%
-    lam=0.01
+    lam=0
     error_train,error_val=learningCurve(np.hstack((np.ones((m,1)),X)),y,np.hstack((np.ones((np.size(Xval),1)),Xval)),yval,lam)
-    plt.plot(range(1,m+1),error_val) 
-    plt.plot(range(1,m+1),error_train)
+    plt.plot(range(1,m+1),error_val,label='Cross Validation') 
+    plt.plot(range(1,m+1),error_train,label="Train")
     plt.ylim(0,150)
     plt.xlim(0,13)
     plt.xlabel("Number of training examples")
-    plt.ylabel("Error")
-    plt.legend('Train', 'Cross Validation')
+    plt.ylabel("Error")   
     plt.title("Learning curve for linear regression")
+    plt.legend(loc='best')
     plt.show()
     for i in range(m):
         print("\t%d\t\t%f\t%f\n",i,error_train[i],error_val[i])
@@ -209,7 +210,7 @@ if __name__=='__main__':
 #%  lambda to see how the fit and learning curve change.
 #%
     
-    lam=100
+    lam=0
     theta=trainLinearReg(X_poly,y,lam)
 #    % Plot training data and fit
     plt.scatter(X,y)
@@ -218,29 +219,87 @@ if __name__=='__main__':
     plt.ylim(-60,40)
     plt.xlabel('Change in water level (x)');
     plt.ylabel('Water flowing out of the dam (y)');
-    plt.title('Polynomial Regression Fit (lambda = %f)');
+    plt.title('Polynomial Regression Fit (lambda =0)');
     plt.show()
     
-    lam=0.01
-    error_train,error_val=learningCurve(np.hstack((np.ones((m,1)),X_poly)),y,np.hstack((np.ones((np.size(Xval),1)),X_poly_val)),yval,lam)
+    
+    error_train,error_val=learningCurve(X_poly,y,X_poly_val,yval,lam)
     plt.plot(range(0,m),error_val) 
     plt.plot(range(0,m),error_train)
-    plt.xlim(0,12)
+    plt.xlim(0,13)
     plt.ylim(0,100)
+    for i in range(m):
+        print("\t%d\t\t%f\t%f\n",i,error_train[i],error_val[i])
+    plt.show()
     
+    
+    #======================
+    lam=1
+    theta=trainLinearReg(X_poly,y,lam)
+#    % Plot training data and fit
+    plt.scatter(X,y)
+    plotFit(min(X), max(X), mu, sigma, theta, p)
+    plt.xlim(-80,80)
+    plt.ylim(0,160)
+    plt.xlabel('Change in water level (x)');
+    plt.ylabel('Water flowing out of the dam (y)');
+    plt.title('Polynomial Regression Fit (lambda =1)');
+    plt.show()
+    
+    
+    error_train,error_val=learningCurve(X_poly,y,X_poly_val,yval,lam)
+    plt.plot(range(0,m),error_val,label="CrossValidation") 
+    plt.plot(range(0,m),error_train,label="Train")
+    plt.xlim(0,13)
+    plt.ylim(0,100)
+    for i in range(m):
+        print("\t%d\t\t%f\t%f\n",i,error_train[i],error_val[i])
+    plt.legend(loc="best")
+    plt.xlabel("Number of training examples")
+    plt.ylabel("error")
+    plt.title("Polynomial Regression Learning Curve (lambda = 1.000000)")
+    plt.show()
+    
+    lam=100
+    theta=trainLinearReg(X_poly,y,lam)
+#    % Plot training data and fit
+    plt.scatter(X,y)
+    plotFit(min(X), max(X), mu, sigma, theta, p)
+    plt.xlim(-80,80)
+    plt.ylim(-10,40)
+    plt.xlabel('Change in water level (x)');
+    plt.ylabel('Water flowing out of the dam (y)');
+    plt.title('Polynomial Regression Fit (lambda =100)');
+    plt.show()
+    
+    
+    error_train,error_val=learningCurve(X_poly,y,X_poly_val,yval,lam)
+    plt.plot(range(0,m),error_val,label="CrossValidation") 
+    plt.plot(range(0,m),error_train,label="Train")
+#    plt.xlim(0,13)
+#    plt.ylim(0,100)
+    for i in range(m):
+        print("\t%d\t\t%f\t%f\n",i,error_train[i],error_val[i])
+    plt.legend(loc="best")
+    plt.xlabel("Number of training examples")
+    plt.ylabel("error")
+    plt.title("Polynomial Regression Learning Curve (lambda = 100)")
+    plt.show()
+        
 #    %% =========== Part 8: Validation for Selecting Lambda =============
 #%  You will now implement validationCurve to test various values of 
 #%  lambda on a validation set. You will then use this to select the
 #%  "best" lambda value.
     lamArray=np.array([0,0.001,0.003,0.01,0.03,0.1,0.3,1,3,10])
     error_train,error_val= validationCurve(X_poly,y,X_poly_val,yval,lamArray)
-    TrainCross,=plt.plot(lamArray,error_train)
-    Validation,=plt.plot(lamArray,error_val)
+    Train,=plt.plot(lamArray,error_train)
+    CrossValidation,=plt.plot(lamArray,error_val)
     plt.xlim(0,10)
     plt.ylim(0,20)
-    plt.legend(handles=[TrainCross,Validation],labels=["TrainCross","Validation"])
+    plt.legend(handles=[Train,CrossValidation],labels=["Train","CrossValidation"])
     plt.xlabel('lambda')
     plt.ylabel('Error')
+    plt.show()
     
     
 #=========== Part 9: Computing test set error and Plotting learning curves with randomly selected examples=============
@@ -250,6 +309,10 @@ if __name__=='__main__':
     theta=trainLinearReg(X_poly,y,3)
     error_val=lineRegCostFunction(theta,X_poly_val,yval,0)    
     error_test=lineRegCostFunction(theta,X_poly_test,ytest,0)
+    print("error_val is:",error_val)
+    print("error_test is:",error_test)
+    
+    
     
     
     

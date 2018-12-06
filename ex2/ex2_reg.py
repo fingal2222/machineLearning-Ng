@@ -8,7 +8,6 @@ Created on Thu Nov  1 14:16:45 2018
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
 import scipy.optimize as opt 
 
 
@@ -60,7 +59,7 @@ def plotDecisionBoundary(theta,X,y,data):
     paraNum=np.shape(X)[1]
     if paraNum<=3:
         #a0+a1*x1+a2*x2
-        plot_x=np.array([np.min(X[:,0]),np.max(X[:,0])])
+        plot_x=np.linspace(np.min(X[:,0]),np.max(X[:,0]),1000)
         plot_y=(-1./theta[2])*(theta[1]*plot_x + theta[0])
         plt.plot(plot_x,plot_y)
     else:
@@ -68,7 +67,6 @@ def plotDecisionBoundary(theta,X,y,data):
         v=np.linspace(-1,1.5,50)
         z=np.zeros(np.shape(u))
         z=np.zeros([len(u),len(v)])
-#        z=np.dot(mapFeature(u,v),theta)
         for i in range(len(u)):
             for j in range(len(v)):
                 z[i,j]=np.dot(mapFeature(u[i],v[j]),theta)
@@ -80,15 +78,18 @@ if __name__=='__main__':
     data =readData(filepath)
 #    plotData(data)
     X=data.values[:,0:2]
+    y=data.values[:,2:3]
     x1=X[:,0]
     x2=X[:,1]     
     out=mapFeature(x1,x2)
     [row,col]=np.shape(out)
     initial_theta=np.zeros([col,1])
+    J,grad=costFunctionReg(initial_theta,out,y,0) 
+    print("initial zeros value is :",J)
     lambs=np.array([0,1,100,50])
     for i in range(np.size(lambs)):
         lamb=lambs[i]   
-        y=data.values[:,2:3]
+        
         J,grad=costFunctionReg(initial_theta,out,y,lamb)    
         result = opt.fmin_tnc(func=costFunctionReg, x0=initial_theta, args=(out, y,lamb))
         plotDecisionBoundary(result[0],out,y,data)

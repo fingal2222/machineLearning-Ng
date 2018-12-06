@@ -8,7 +8,6 @@ Created on Sat Nov  3 19:59:35 2018
 
 from scipy.io import loadmat
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 
 def sigmoid(z):
@@ -43,5 +42,6 @@ if __name__=='__main__':
     arr["y"]=data["y"]
     eq=(arr["y"]==arr["max_index"])+0    
     prob=np.mean(eq)
+    print('Training Set Accuracy: ', prob* 100)
     
     

@@ -22,18 +22,35 @@ def sigmoid(z):
     gz=1/(1+np.exp(-z))
     return gz   
 
+def displayData(X):
+    example_width = int(np.round(np.sqrt(np.size(X, 1))))
+    [m,n]=np.shape(X)
+    example_height=int(n/example_width)
+    display_rows=int(np.floor(np.sqrt(m)))
+    display_cols=int(np.ceil(m/display_rows))
+    
+    pad=1    
+    display_array=-np.ones((pad + display_rows * (example_height + pad),pad + display_cols * (example_width + pad)))
+    curr_ex=0
+    for j in range(1,display_rows+1):
+        for i in range(1,display_cols+1):
+            if curr_ex>m:
+                break
+            max_val=np.max(abs(X[curr_ex,:]))
+            colstart=pad + (j - 1)*(example_height + pad)
+            colend=pad + (j - 1)*(example_height + pad)+example_height
+            rowstart=pad + (i - 1)*(example_width + pad)
+            rowend=pad + (i - 1)*(example_width + pad)+example_width
+            display_array[colstart:colend,rowstart:rowend] = X[curr_ex, :].reshape((example_height, example_width)) / max_val
+            curr_ex=curr_ex+1
+        if curr_ex>m:
+            break
+        plt.imshow(display_array.T)
+
+
 
 def loadData(filePath):
-    return loadmat(filePath)
-    
-def displayData(data,image_width):
-    
-    for i in range(np.shape(data)[0]):
-        plt.subplot(10,10,1+i)        
-        plt.imshow(data[i].reshape((image_width,image_width)))
-        plt.axis('off')
-        
-    plt.show()
+    return loadmat(filePath)    
         
 def lrCostFunction(theta,X,y,lam):
     m=len(y)
@@ -85,7 +102,7 @@ if __name__=='__main__':
     data=loadData("D:\BaiduNetdiskDownload\mlclass-ex3-jin\ex3data1.mat")
     X=data["X"]
     y=data["y"]
-#    displayData(X[np.random.randint(np.shape(X)[0],size=100),:],20)
+    displayData(X[np.random.randint(np.shape(X)[0],size=100),:])
     result=oneVsAll(X,y,10,0.1)
     res2=predictOneVsAll(X,result)
     
@@ -95,5 +112,6 @@ if __name__=='__main__':
     arr["y"]=data["y"]
     eq=(arr["y"]==arr["max_index"])+0    
     prob=np.mean(eq)
+    print('Training Set Accuracy: ', prob* 100)
     
    
